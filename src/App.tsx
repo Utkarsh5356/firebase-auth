@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import {getAuth} from "firebase/auth"
+import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut} from "firebase/auth"
+import { useState } from "react";
 
 function App() {
   const  firebaseConfig = {
@@ -11,11 +12,50 @@ function App() {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
+  const [email,setEmail]=useState('')
+  const [password,setPassword]=useState('')
+  const [user,setUser]=useState({})
+
   const app=initializeApp(firebaseConfig)
   const auth=getAuth(app)
+
+  const signUp=()=>{
+    createUserWithEmailAndPassword(auth,email,password)
+    .then(userCredentials => {
+       setUser(userCredentials.user)
+       console.log(userCredentials.user)
+    })
+    .catch(error =>{
+      console.log(error)
+    })
+  }
+  const signIn=()=>{
+    signInWithEmailAndPassword(auth,email,password)
+      .then(userCredentials=>{
+        setUser(userCredentials.user)
+        console.log(userCredentials.user)
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+  }
+  const logOut=()=>{
+    signOut(auth)
+    .then(()=>{
+      setUser({})
+    console.log("user logged out")
+    })
+    .catch(error=>{
+      console.log(error)
+    })
+  }
   return (
     <div>
-      Hello
+      <input type="text" placeholder="email" onChange={(e)=>setEmail(e.target.value)} />
+      <input type="password" placeholder="password" onChange={(e)=>setPassword(e.target.value)} />
+      <button onClick={signUp}>signup</button>
+      <button onClick={signIn}>signin</button>
+      <button onClick={logOut}>logout</button>
     </div>
   )
 }
