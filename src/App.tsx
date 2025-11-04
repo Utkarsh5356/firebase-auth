@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut} from "firebase/auth"
+import {createUserWithEmailAndPassword, getAuth,signInWithEmailAndPassword,signOut,signInWithPopup,GoogleAuthProvider,GithubAuthProvider} from "firebase/auth"
 import { useState } from "react";
 
 function App() {
@@ -18,7 +18,9 @@ function App() {
 
   const app=initializeApp(firebaseConfig)
   const auth=getAuth(app)
-
+  const googleprovider=new GoogleAuthProvider() 
+  const githubprovider=new GithubAuthProvider()
+  
   const signUp=()=>{
     createUserWithEmailAndPassword(auth,email,password)
     .then(userCredentials => {
@@ -49,6 +51,26 @@ function App() {
       console.log(error)
     })
   }
+  const google=()=>{
+    signInWithPopup(auth,googleprovider)
+    .then(userCredentials=>{
+      setUser(userCredentials.user)
+      console.log(userCredentials.user)
+    })
+    .catch(error=>{
+      console.log(error)
+    })
+  }
+  const github=()=>{
+   signInWithPopup(auth,githubprovider)
+   .then(userCredentials=>{
+     setUser(userCredentials.user)
+     console.log(userCredentials.user)
+   })
+   .catch(error=>{
+    console.log(error)
+   })
+  }
   return (
     <div>
       <input type="text" placeholder="email" onChange={(e)=>setEmail(e.target.value)} />
@@ -56,6 +78,8 @@ function App() {
       <button onClick={signUp}>signup</button>
       <button onClick={signIn}>signin</button>
       <button onClick={logOut}>logout</button>
+      <button onClick={google}>Login with Google</button>
+      <button onClick={github}>Login with Github</button>
     </div>
   )
 }
